@@ -1,3 +1,5 @@
+import asyncio
+
 from chainchomplib.data import SocketEvents
 from socketio import AsyncClient
 
@@ -8,7 +10,9 @@ class SocketEmitter:
         self.socket_client = socket_client
 
     def emit_to_chainchomp_core(self, data):
-        self.socket_client.emit(
-            SocketEvents.RECEIVE_MESSAGE_FROM_CHAINLINK,
-            data
+        asyncio.run(
+            self.socket_client.emit(
+                SocketEvents.RECEIVE_MESSAGE_FROM_CHAINLINK,
+                data
+            )
         )

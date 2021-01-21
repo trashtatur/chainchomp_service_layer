@@ -1,3 +1,4 @@
+import asyncio
 from typing import Callable
 
 import socketio
@@ -38,6 +39,7 @@ class SocketClient:
             LoggerInterface.error(f'You need to call set_up on the ServiceLayerInterface before you connect!')
             return
         await self.sio.connect(self.URL, headers={'CHAINLINK_NAME': self.using_chainlink.chainlink_name})
+        await self.sio.wait()
 
     def set_callback(self, callback_function: Callable):
         self.service_callback = callback_function
