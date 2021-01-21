@@ -1,10 +1,8 @@
 from queue import PriorityQueue, Empty
 from threading import Thread
-from time import sleep
 
 from chainchomplib import LoggerInterface
 from chainchomplib.adapterlayer.Message import Message
-from chainchomplib.data import SocketEvents
 from socketio import AsyncClient
 
 from chainchomp_service_layer.SocketEmitter import SocketEmitter
