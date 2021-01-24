@@ -1,4 +1,4 @@
 aiohttp~=3.7.3
 python-socketio~=5.0.2
-chainchomplib~=0.0.10
+chainchomplib~=0.1.0
 asyncio

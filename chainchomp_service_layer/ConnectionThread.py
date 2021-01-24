@@ -6,7 +6,7 @@ from typing import Generic, TypeVar
 from chainchomplib import LoggerInterface
 from chainchomplib.adapterlayer.Message import Message
 from chainchomplib.adapterlayer.MessageHeader import MessageHeader
-from chainchomplib.configlayer.ChainlinkResolver import ChainlinkResolver
+from chainchomplib.configlayer.resolver.ChainlinkResolver import ChainlinkResolver
 
 from chainchomp_service_layer.MessageSendWorker import MessageSendWorker
 from chainchomp_service_layer.SocketClient import SocketClient
