@@ -24,4 +24,4 @@ class MessageSendWorker(Thread):
                 LoggerInterface.warning('No messages to send to adapters')
                 continue
             else:
-                self.socket_emitter.emit_to_chainchomp_core(message.get_serialized())
+                self.socket_emitter.emit(message.get_serialized())

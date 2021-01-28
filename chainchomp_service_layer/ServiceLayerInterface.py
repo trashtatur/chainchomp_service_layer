@@ -11,6 +11,4 @@ class ServiceLayerInterface:
         self.__connection_thread.start()
 
     def emit(self, data):
-        if self.__connection_thread is None:
-            return data
-        self.__connection_thread.emit(data)
+        return self.__connection_thread.emit(data)

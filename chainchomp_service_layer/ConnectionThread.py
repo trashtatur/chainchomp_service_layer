@@ -1,6 +1,7 @@
 import asyncio
 import queue
 from threading import Thread
+from time import sleep
 from typing import Generic, TypeVar
 
 from chainchomplib import LoggerInterface
@@ -31,7 +32,7 @@ class ConnectionThread(Thread):
         self.socket_client = SocketClient()
         self.message_send_worker = MessageSendWorker(self.queued_messages, self.socket_client.sio)
 
-    def emit(self, message: Generic[T]) -> T or None:
+    def emit(self, message: Generic[T]) -> T:
         """
         Emits a message to chainchomps core. You need to call set_up first before this will work.
         If it is not set up, it will just return your message and write an error message into
@@ -39,14 +40,16 @@ class ConnectionThread(Thread):
         :param message: A data package that you want to send off. Chainchomp takes care of all the formatting.
         :return: Either your message or None if successful
         """
-        if self.socket_client.using_chainlink is None:
+        while self.socket_client.using_chainlink is None:
             LoggerInterface.error('Setup has not concluded yet. Wait a bit.')
-            return message
+            sleep(1)
+            continue
         chainlink_name = self.socket_client.using_chainlink.chainlink_name
         adapter = self.socket_client.using_chainlink.adapter
         next_links = self.socket_client.using_chainlink.next_links
         message = Message(message, MessageHeader(chainlink_name, next_links, adapter))
         self.queued_messages.put(message)
+        return message
 
     def run(self):
         self.message_send_worker.start()
