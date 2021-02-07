@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='chainchompservice',
-    version='0.0.4',
+    version='0.0.5',
     packages=find_packages(),
     description='Service layer package for chainchomp',
     url='https://github.com/trashtatur/chainchomp_service_layer/',

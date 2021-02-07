@@ -1,19 +1,16 @@
 from typing import Callable
 
-import socketio
 from chainchomplib import LoggerInterface
 from chainchomplib.adapterlayer.MessageDeserializer import MessageDeserializer
 from chainchomplib.configlayer.model.ChainfileModel import ChainfileModel
 from chainchomplib.data import SocketEvents
-
-from chainchomp_service_layer.SocketEmitter import SocketEmitter
+from socketio import AsyncClient
 
 
 class SocketClient:
-    def __init__(self):
-        self.sio = socketio.AsyncClient()
+    def __init__(self, async_client: AsyncClient):
+        self.sio = async_client
         self.URL = 'http://localhost:4410'
-        self.socket_emitter = SocketEmitter(self.sio)
         self.using_chainlink: ChainfileModel or None = None
         self.service_callback = None
         self.sio.on(SocketEvents.EMIT_TO_APPLICATION, self.on_receive_message)

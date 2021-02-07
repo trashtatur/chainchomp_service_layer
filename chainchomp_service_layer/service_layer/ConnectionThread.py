@@ -2,34 +2,29 @@ import asyncio
 import queue
 from threading import Thread
 from time import sleep
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, Callable
 
+import socketio
 from chainchomplib import LoggerInterface
 from chainchomplib.adapterlayer.Message import Message
 from chainchomplib.adapterlayer.MessageHeader import MessageHeader
 from chainchomplib.configlayer.resolver.ChainlinkResolver import ChainlinkResolver
 
-from chainchomp_service_layer.MessageSendWorker import MessageSendWorker
-from chainchomp_service_layer.SocketClient import SocketClient
+from chainchomp_service_layer.service_layer.MessageSendWorker import MessageSendWorker
+from chainchomp_service_layer.service_layer.SocketClient import SocketClient
 
 T = TypeVar('T')
 
 
 class ConnectionThread(Thread):
 
-    def __init__(self, name, callback):
-        """
-        :param name: The name of your chainlink. It will be resolved to the chainfile of your chainlink if
-        that chainlink is registered.
-        :param callback: A callback function. It is called when a message arrives. It is expect to accept 3 parameters
-        The first is the message body. The second is the message origin and the second is the adapter that was used
-        to send it. Your function does not need to consume all these arguments, but should provide them in its signature
-        """
+    def __init__(self):
+
         super().__init__()
-        self.name = name
-        self.callback = callback
+        self.name = None
+        self.callback = None
         self.queued_messages = queue.PriorityQueue()
-        self.socket_client = SocketClient()
+        self.socket_client = SocketClient(socketio.AsyncClient())
         self.message_send_worker = MessageSendWorker(self.queued_messages, self.socket_client.sio)
 
     def emit(self, message: Generic[T]) -> T:
@@ -54,6 +49,17 @@ class ConnectionThread(Thread):
     def run(self):
         self.message_send_worker.start()
         asyncio.run(self.__initiate_connection())
+
+    def set_up(self, name: str, callback: Callable):
+        """
+        :param name: The name of your chainlink. It will be resolved to the chainfile of your chainlink if
+        that chainlink is registered.
+        :param callback: A callback function. It is called when a message arrives. It is expect to accept 3 parameters
+        The first is the message body. The second is the message origin and the second is the adapter that was used
+        to send it. Your function does not need to consume all these arguments, but should provide them in its signature
+        """
+        self.name = name
+        self.callback = callback
 
     async def __initiate_connection(self):
         """

@@ -5,7 +5,7 @@ from chainchomplib import LoggerInterface
 from chainchomplib.adapterlayer.Message import Message
 from socketio import AsyncClient
 
-from chainchomp_service_layer.SocketEmitter import SocketEmitter
+from chainchomp_service_layer.service_layer.SocketEmitter import SocketEmitter
 
 
 class MessageSendWorker(Thread):

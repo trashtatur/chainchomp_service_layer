@@ -2,15 +2,20 @@ import inspect
 import os
 
 from chainchomplib import LoggerInterface
-from chainchomplib.configlayer.resolver.ChainfileResolver import ChainfileResolver
 
-from chainchomp_service_layer.ConnectionThread import ConnectionThread
+from chainchomp_service_layer.service_layer.ConnectionThread import ConnectionThread
+from chainchomp_service_layer.resolver.ChainfileNameResolver import ChainfileNameResolver
 
 
 class ServiceLayerInterface:
 
-    def __init__(self):
-        self.__connection_thread: ConnectionThread or None = None
+    def __init__(
+            self,
+            connection_thread: ConnectionThread,
+            chainfile_name_resolver: ChainfileNameResolver
+    ):
+        self.chainfile_name_resolver = chainfile_name_resolver
+        self.__connection_thread = connection_thread
 
     def set_up(self, callback, name=None):
         """
@@ -26,23 +31,14 @@ class ServiceLayerInterface:
             filepath = frame_info.filename
             del frame_info
             caller_path = os.path.abspath(filepath)
-            chainlink_name = self.__get_chainfile_name(os.path.dirname(caller_path))
+            chainlink_name = self.chainfile_name_resolver.resolve(os.path.dirname(caller_path))
 
         if chainlink_name is None:
             LoggerInterface.error('No chainlink was found at the callers path. Aborting.')
             return
-        self.__connection_thread = ConnectionThread(chainlink_name, callback)
+        self.__connection_thread.set_up(chainlink_name, callback)
         self.__connection_thread.start()
 
     def emit(self, data):
         return self.__connection_thread.emit(data)
 
-    def __get_chainfile_name(self, path) -> str or None:
-        if os.path.isfile(os.path.join(path, 'chainfile.yml')):
-            chainfile = ChainfileResolver.resolve(os.path.join(path, 'chainfile.yml'))
-            return chainfile.chainlink_name
-
-        upper_path = os.path.dirname(path)
-        if upper_path == path:
-            return None
-        self.__get_chainfile_name(upper_path)
