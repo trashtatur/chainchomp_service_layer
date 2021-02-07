@@ -21,7 +21,7 @@ class ServiceLayerInterface:
         :return:
         """
         chainlink_name = name
-        if name is not None:
+        if name is None:
             frame_info = inspect.stack()[1]
             filepath = frame_info.filename
             del frame_info
@@ -31,7 +31,7 @@ class ServiceLayerInterface:
         if chainlink_name is None:
             LoggerInterface.error('No chainlink was found at the callers path. Aborting.')
             return
-        self.__connection_thread = ConnectionThread(name, callback)
+        self.__connection_thread = ConnectionThread(chainlink_name, callback)
         self.__connection_thread.start()
 
     def emit(self, data):
