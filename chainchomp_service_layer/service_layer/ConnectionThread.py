@@ -67,12 +67,6 @@ class ConnectionThread(Thread):
         application. It is imperative that it is called before any sending takes place.
         :return: None
         """
-        if self.name is None:
-            LoggerInterface.error('Provided name can not be None')
-            return
-        if not callable(self.callback):
-            LoggerInterface.error('Provided callback must be callable')
-            return
 
         chainlink_model = ChainlinkResolver.resolve(self.name)
         if chainlink_model is None:

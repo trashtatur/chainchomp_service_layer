@@ -25,6 +25,11 @@ class ServiceLayerInterface:
         that itself most of the time
         :return:
         """
+
+        if not callable(callback):
+            LoggerInterface.error('The provided callback is not callable.')
+            return
+
         chainlink_name = name
         if name is None:
             frame_info = inspect.stack()[1]
@@ -36,6 +41,7 @@ class ServiceLayerInterface:
         if chainlink_name is None:
             LoggerInterface.error('No chainlink was found at the callers path. Aborting.')
             return
+
         self.__connection_thread.set_up(chainlink_name, callback)
         self.__connection_thread.start()
 
